@@ -1,0 +1,51 @@
+{% extends "shortener/base.html" %}
+
+{% block content %}
+<section class="card">
+    <h2>Shorten a URL</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Shorten</button>
+    </form>
+
+    {% if short_url_obj %}
+        <div class="result">
+            <p>Your short link:</p>
+            <p class="short-link">
+                <a href="{{ request.build_absolute_uri }}{{ short_url_obj.short_code }}/">
+                    {{ request.get_host }}/{{ short_url_obj.short_code }}/
+                </a>
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>Recent Links</h2>
+    {% if recent_links %}
+        <table class="links-table">
+            <thead>
+                <tr>
+                    <th>Short Code</th>
+                    <th>Original URL</th>
+                    <th>Clicks</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for link in recent_links %}
+                <tr>
+                    <td><a href="/{{ link.short_code }}/">{{ link.short_code }}</a></td>
+                    <td class="url-cell">{{ link.original_url }}</td>
+                    <td>{{ link.clicks }}</td>
+                    <td>{{ link.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No links yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
